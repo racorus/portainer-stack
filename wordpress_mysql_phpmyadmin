@@ -1,0 +1,55 @@
+version: '3.1'
+services:
+  mysql_db:
+    container_name: Wordpress-DB-Project
+    image: mysql:5.7
+    restart: always
+    ports:
+      -  3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: PASSWORDHERE
+      MYSQL_DATABASE: DATABASENAME
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: PASSWORDHERE
+    volumes:
+      - /var/lib/docker/volumes/Project/_data/website:/var/lib/mysql
+    networks:
+      - myapp
+wordpress:
+    container_name: Wordpress-Web-Project
+    depends_on:
+      - mysql_db
+    image: wordpress
+    restart: always
+    ports:
+      - 8282:80
+    environment:
+      WORDPRESS_DB_HOST: mysql_db:3306
+      WORDPRESS_DB_USER: admin
+      WORDPRESS_DB_PASSWORD: PASSWORD
+      WORDPRESS_DB_NAME: DATABASENAME
+    volumes:
+      - /var/lib/docker/volumes/Project/_data/mysqldb:/var/www/html
+    networks:
+      - myapp
+phpmyadmin:
+    container_name: phpmyadmin-Project
+    depends_on: 
+      - mysql_db
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 8585:80
+    environment:
+      PMA_HOST: mysql_db
+      MYSQL_ROOT_PASSWORD: PASSWORD
+    volumes:
+      - /var/lib/docker/volumes/Project/_data/phpmyadmin:/var/www/html/phpmyadmin
+    networks:
+      - myapp
+volumes:
+  wordpress:
+  database:
+  
+networks:
+  myapp:
